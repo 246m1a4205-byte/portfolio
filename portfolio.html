@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pavan | Pro Portfolio Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-deep: #0f172a;
+            --bg-card: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --danger: #f43f5e;
+            --success: #10b981;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-deep); color: var(--text-main); margin: 0; padding: 0; }
+        
+        /* Layout */
+        .container { max-width: 1000px; margin: 40px auto; padding: 20px; }
+        .card { background: var(--bg-card); border-radius: 16px; padding: 30px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 25px; }
+
+        /* Login */
+        #loginBox { width: 340px; margin: 100px auto; text-align: center; }
+        input, select { margin: 10px 0; padding: 12px; width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; box-sizing: border-box; }
+        
+        button { padding: 12px 24px; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; transition: 0.3s; width: 100%; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        /* Tabs */
+        .nav-tabs { display: flex; gap: 15px; border-bottom: 1px solid #334155; margin-bottom: 30px; overflow-x: auto; }
+        .nav-tabs button { background: none; color: var(--text-dim); border: none; border-bottom: 3px solid transparent; width: auto; padding: 15px; border-radius: 0; cursor: pointer; }
+        .nav-tabs button.active { border-bottom: 3px solid var(--accent); color: var(--accent); }
+
+        /* Skills Styling */
+        .skill-tag { display: inline-flex; align-items: center; background: rgba(56, 189, 248, 0.1); color: var(--accent); padding: 8px 16px; border-radius: 50px; margin: 5px; font-weight: 600; border: 1px solid rgba(56, 189, 248, 0.2); }
+        .skill-tag i { margin-right: 8px; cursor: pointer; color: var(--danger); font-size: 14px; }
+
+        /* Video/Image Grid */
+        .display-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 15px; }
+        .item-card { background: #111827; border-radius: 12px; overflow: hidden; position: relative; border: 1px solid #334155; height: 130px; }
+        .item-card img, .item-card iframe { width: 100%; height: 100%; border: none; object-fit: cover; }
+        
+        .delete-btn { position: absolute; top: 8px; right: 8px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; z-index: 10; line-height: 1; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="loginBox">
+    <div class="card">
+        <h2 style="color:var(--accent)">pavan Admin</h2>
+        <input type="text" id="username" placeholder="Username (pavan)">
+        <input type="password" id="password" placeholder="Password (5599)">
+        <button onclick="login()">Enter System</button>
+    </div>
+</div>
+
+<div id="dashboard" class="container hidden">
+    <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 15px;">
+        <h1 style="margin:0">D.Pavan kumar<i class="fas fa-check-circle" style="color:var(--accent); font-size:18px;"></i></h1>
+        <div style="display:flex; gap:10px; align-items: center;">
+            <button onclick="logout()" style="background:var(--danger); color:white; width:auto;">Logout</button>
+        </div>
+    </div>
+
+    <div class="nav-tabs">
+        <button onclick="showSection(event, 'profile')" class="tab-btn active">Profile</button>
+        <button onclick="showSection(event, 'skills')" class="tab-btn">Skills</button>
+        <button onclick="showSection(event, 'media')" class="tab-btn">Media & Certs</button>
+    </div>
+
+    <div id="profile" class="section">
+        <div class="card" style="text-align:center;">
+            <div style="position:relative; width:150px; margin: 0 auto;">
+                <img id="profilePic" src="pavan.jpg" style="width:150px; height:150px; border-radius:50%; border:3px solid var(--accent); object-fit:cover;">
+            </div>
+            <h3>pavan</h3>
+            <p style="color:var(--text-dim)">B.Tech 2nd Year | CSE (AI & ML Specialization)</p>
+        </div>
+    </div>
+
+    <div id="skills" class="section hidden">
+        <div class="card">
+            <h3>Add Personal & Tech Skills</h3>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="skillInput" placeholder="e.g. Python, Video Editing">
+                <button onclick="addSkill()" style="width:120px; background:var(--success); color:white;">Add</button>
+            </div>
+            <div id="skillCloud" style="margin-top:20px;"></div>
+        </div>
+    </div>
+
+    <div id="media" class="section hidden">
+        <div class="card">
+            <h3>Add Media Content</h3>
+            <select id="mediaType" onchange="toggleMediaInputs()">
+                <option value="photo">Gallery Photo</option>
+                <option value="cert">Certificate (Image)</option>
+                <option value="video">YouTube Video URL</option>
+            </select>
+            <input type="file" id="fileInput">
+            <input type="text" id="videoUrl" class="hidden" placeholder="Paste YouTube Link (e.g. https://youtu.be/...)">
+            <button onclick="handleMediaUpload()" style="margin-top:10px;">Upload to Dashboard</button>
+        </div>
+
+        <div class="card">
+            <h3>My Certificates</h3>
+            <div id="certGrid" class="display-grid"></div>
+        
+            <h3 style="margin-top:40px;">YouTube Videos</h3>
+            <div id="videoGrid" class="display-grid"></div>
+
+            <h3 style="margin-top:40px;">Gallery</h3>
+            <div id="photoGrid" class="display-grid"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Login Logic ---
+    function login() {
+        const u = document.getElementById("username").value;
+        const p = document.getElementById("password").value;
+        if(u === "pavan" && p === "5599") {
+            localStorage.setItem("v_auth", "true");
+            checkAuth();
+        } else { alert("Invalid Credentials!"); }
+    }
+    
+    function logout() { 
+        localStorage.removeItem("v_auth"); 
+        location.reload(); 
+    }
+
+    function checkAuth() {
+        if(localStorage.getItem("v_auth")) {
+            document.getElementById("loginBox").classList.add('hidden');
+            document.getElementById("dashboard").classList.remove('hidden');
+            renderSkills();
+            renderMedia();
+        }
+    }
+
+    // --- Tab Switching ---
+    function showSection(e, id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.remove('hidden');
+        e.currentTarget.classList.add('active');
+    }
+
+    // --- Skills Logic ---
+    function addSkill() {
+        const input = document.getElementById("skillInput");
+        if(!input.value) return;
+        let skills = JSON.parse(localStorage.getItem("v_skills")) || [];
+        skills.push(input.value);
+        localStorage.setItem("v_skills", JSON.stringify(skills));
+        input.value = "";
+        renderSkills();
+    }
+
+    function renderSkills() {
+        const skills = JSON.parse(localStorage.getItem("v_skills")) || [];
+        document.getElementById("skillCloud").innerHTML = skills.map((s, index) => `
+            <span class="skill-tag"><i class="fas fa-times-circle" onclick="deleteSkill(${index})"></i> ${s}</span>
+        `).join('');
+    }
+
+    function deleteSkill(index) {
+        let skills = JSON.parse(localStorage.getItem("v_skills"));
+        skills.splice(index, 1);
+        localStorage.setItem("v_skills", JSON.stringify(skills));
+        renderSkills();
+    }
+
+    // --- Media Logic ---
+    function toggleMediaInputs() {
+        const type = document.getElementById('mediaType').value;
+        document.getElementById('fileInput').classList.toggle('hidden', type === 'video');
+        document.getElementById('videoUrl').classList.toggle('hidden', type !== 'video');
+    }
+
+    function handleMediaUpload() {
+        const type = document.getElementById("mediaType").value;
+        if(type === 'video') {
+            const url = document.getElementById("videoUrl").value;
+            if(!url) return;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            const videoId = (match && match[2].length == 11) ? match[2] : null;
+            
+            if(videoId) {
+                saveMedia('v_videos', `https://www.youtube.com/embed/${videoId}`);
+                document.getElementById("videoUrl").value = "";
+            } else { alert("Invalid YouTube URL"); }
+        } else {
+            const file = document.getElementById("fileInput").files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => saveMedia(type === 'cert' ? 'v_certs' : 'v_photos', e.target.result);
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function saveMedia(key, src) {
+        let data = JSON.parse(localStorage.getItem(key)) || [];
+        data.push({ id: Date.now(), src });
+        localStorage.setItem(key, JSON.stringify(data));
+        renderMedia();
+    }
+
+    function renderMedia() {
+        const profile = localStorage.getItem("v_p_pic");
+        if(profile) document.getElementById("profilePic").src = profile;
+
+        renderGrid('v_certs', 'certGrid', 'img');
+        renderGrid('v_photos', 'photoGrid', 'img');
+        renderGrid('v_videos', 'videoGrid', 'iframe');
+    }
+
+    function renderGrid(key, divId, tag) {
+        const items = JSON.parse(localStorage.getItem(key)) || [];
+        document.getElementById(divId).innerHTML = items.map(i => `
+            <div class="item-card">
+                <button class="delete-btn" onclick="deleteItem('${key}', ${i.id})">×</button>
+                <${tag} src="${i.src}" ${tag === 'iframe' ? 'allowfullscreen' : ''}></${tag}>
+            </div>
+        `).join('');
+    }
+
+    function deleteItem(key, id) {
+        let items = JSON.parse(localStorage.getItem(key)).filter(i => i.id !== id);
+        localStorage.setItem(key, JSON.stringify(items));
+        renderMedia();
+    }
+
+    checkAuth();
+</script>
+
+</body>
+</html>
